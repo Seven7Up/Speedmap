@@ -1,12 +1,12 @@
 # SPEEDMAP
 
 ![Python Versions](https://img.shields.io/badge/python-3.7|3.8|3.9-yellow.svg)
-![GitHub branch checks state](https://img.shields.io/github/checks-status/Seven-7Up/speedmap/master?color=green&logo=master&style=flat-square)
+![GitHub branch checks state](https://img.shields.io/github/checks-status/Seven-7Up/speedmap/master?color=green&logo=master)
 ![Build](https://img.shields.io/badge/build-passing-brightgreen)
 
 ## About:
 
-Speedmap is a python script which scans a target ports and use nmap for a huge and win time for a full ports scan aimed to be fast and ... speed?! I AM SPEED! ;)
+Speedmap is a [`python`](https://python.org/) script which scans a target ports and use the powerfull [`nmap`](https://nmap.org/) for a huge and win time for a full ports scan aimed to be fast and ... speed?! I AM SPEED! ;)
 
 ## Setup:
 
@@ -20,6 +20,12 @@ or:
 
 ```
 pip install colorama pwntools
+```
+
+Then get the repo as [tarball](https://github.com/Seven-7Up/speedmap/archive/master.tar.gz) or [zip](https://github.com/Seven-7Up/speedmap/archive/master.zip) or with [`git`](https://git-scm.com/):
+
+```
+git clone https://github.com/Seven-7Up/speedmap.git
 ```
 
 ## Usage:
