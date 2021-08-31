@@ -6,6 +6,7 @@
 
 ## About:
 
+![ScreenRecord](ScreenShots/ScreenRecord-2021-8-31.gif)
 Speedmap is a [`python`](https://python.org/) script which scans a target ports and use the powerfull [`nmap`](https://nmap.org/) for a huge and win time for a full ports scan aimed to be fast and ... speed?! I AM SPEED! ;)
 
 ## Setup:
@@ -67,7 +68,7 @@ Optional arguments:
   -p PORTS, --ports PORTS
                         Specify which Ports to Scan, Use a START-END for a range (Ex: 1-1000, Ex2: 200-200). Default is 1-65535
   -n NMAP_OPTIONS [NMAP_OPTIONS ...], --nmap NMAP_OPTIONS [NMAP_OPTIONS ...]
-                        Set Nmap flags. Use '_' on place of '-'. Default is '_A _sC _vv'
+                        Set Nmap flags. Use '_' on place of '-'. Must be the last argument. Default is '_A _sC _vv'
   -oN NMAP_OUTPUT, --nmap-output NMAP_OUTPUT
                         Name the Nmap output file.
 ```

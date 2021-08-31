@@ -11,8 +11,10 @@ from pwn import log
 # import xmltodict
 # import json
 
+
 def banner():
-    colors = [Fore.LIGHTGREEN_EX, Fore.GREEN, Fore.LIGHTGREEN_EX, Fore.LIGHTYELLOW_EX, Fore.YELLOW, Fore.RED, Fore.LIGHTRED_EX, Fore.LIGHTMAGENTA_EX, Fore.MAGENTA, Fore.BLUE, Fore.LIGHTBLUE_EX, Fore.CYAN, Fore.LIGHTCYAN_EX]
+    colors = [Fore.LIGHTGREEN_EX, Fore.GREEN, Fore.LIGHTGREEN_EX, Fore.LIGHTYELLOW_EX, Fore.YELLOW, Fore.RED,
+              Fore.LIGHTRED_EX, Fore.LIGHTMAGENTA_EX, Fore.MAGENTA, Fore.BLUE, Fore.LIGHTBLUE_EX, Fore.CYAN, Fore.LIGHTCYAN_EX]
 
     ascii_banner = [
         r"""_______________________________________________  _________________
@@ -100,7 +102,7 @@ def basic_scan(target, ports, timeout):
 
     secound_time = time.time()
     ports_progress.success(
-        f"The Time taken to Scan all ports: {int((secound_time-first_time)*1000)} ms")
+        f"The Time taken to Scan all ports is {int((secound_time-first_time)*1000)} ms")
     return working_ports
 
 
@@ -113,10 +115,12 @@ def stream_process(process):
 
 def nmap(target, ports: str, options: list, nmap_output, debug_option):
     status_banner(target, nmap=True)
-    command = ["nmap", "-p", ports, target, "-oN", nmap_output]     # + ["-oX", "/tmp/speedmap-nmap.xml"]
+    # + ["-oX", "/tmp/speedmap-nmap.xml"]
+    command = ["nmap", "-p", ports, target, "-oN", nmap_output]
     command += options
     # command += ["--version-trace", "--script-trace"]
-    debug("command = '%s'" % "".join([f"{i} " for i in command])[:-1], debug_option)
+    debug("command = '%s'" %
+          "".join([f"{i} " for i in command])[:-1], debug_option)
     process = subprocess.Popen(
         command, stdout=subprocess.PIPE, stderr=subprocess.STDOUT)
     while stream_process(process):
@@ -124,12 +128,14 @@ def nmap(target, ports: str, options: list, nmap_output, debug_option):
     # xml_output = open("/tmp/speedmap-nmap.xml", "r").read().rstrip()
     # return json.loads(json.dumps(xmltodict.parse(xml_output)))
 
+
 class CapitalisedHelpFormatter(argparse.HelpFormatter):
     def add_usage(self, usage, actions, groups, prefix=None):
         if prefix is None:
             prefix = 'Usage: '
         return super(CapitalisedHelpFormatter, self).add_usage(
             usage, actions, groups, prefix)
+
 
 class MyParser(argparse.ArgumentParser):
     def error(self, message):
@@ -140,7 +146,8 @@ class MyParser(argparse.ArgumentParser):
 
 def main():
     banner()
-    parser = MyParser(description="Speedmap is python script aiming to be fast and ... speed?! I AM SPEED!", add_help=False, formatter_class=CapitalisedHelpFormatter)
+    parser = MyParser(description="Speedmap is python script aiming to be fast and ... speed?! I AM SPEED!",
+                      add_help=False, formatter_class=CapitalisedHelpFormatter)
     parser._positionals.title = 'Positional arguments'
     parser._optionals.title = 'Optional arguments'
     parser.add_argument('-h',
@@ -186,7 +193,7 @@ def main():
                         default="_A _sC _vv",
                         nargs='+',
                         dest="nmap_options",
-                        help="Set Nmap flags. Use '_' on place of '-'. Default is '_A _sC _vv'"
+                        help="Set Nmap flags. Use '_' on place of '-'. Must be the last argument. Default is '_A _sC _vv'"
                         )
     parser.add_argument("-oN",
                         "--nmap-output",
@@ -194,7 +201,7 @@ def main():
                         required=False,
                         dest="nmap_output",
                         help="Name the Nmap output file."
-    )
+                        )
     args = parser.parse_args()
     debug_option = args.debug_option
     targets = args.targets
@@ -202,9 +209,11 @@ def main():
     debug(f"{debug_option=}", debug_option)
     debug(f"{targets=}", debug_option)
     debug(f"{ports=}", debug_option)
-    if ports[0] < 1 or ports[1] > 65535: log.failure("Invalid ports range!"); exit(1)
+    if ports[0] < 1 or ports[1] > 65535:
+        log.failure("Invalid ports range!")
+        exit(1)
     timeout = args.timeout
-    nmap_options = [i.replace("_", "-") for i in args.nmap_options.split(" ")]
+    nmap_options = [i.replace("_", "-") for i in args.nmap_options]
     for target in targets.split(","):
         if not args.nmap_output:
             nmap_output = f"speedmap-{target}-{time.gmtime()[3]}:{time.gmtime()[4]}:{time.gmtime()[5]}.txt"
@@ -212,9 +221,12 @@ def main():
             nmap_output = args.nmap_output
         debug(f"{nmap_output=}", debug_option)
         status_banner(target, initial=True)
-        if target == "": continue
+        if target == "":
+            continue
         working_ports = basic_scan(target, ports, timeout)
-        if len(working_ports) == 0: log.failure("There is no open port in this machine!"); continue
+        if len(working_ports) == 0:
+            log.failure("There is no open port in this machine!")
+            continue
         working_ports = "".join([f"{i}," for i in working_ports])[:-1]
         nmap(target, working_ports, nmap_options, nmap_output, debug_option)
         status_banner(target, final=True)
