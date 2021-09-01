@@ -1,6 +1,7 @@
 #!/usr/bin/env python3
 
 import argparse
+from os import path
 import random
 import socket
 import subprocess
@@ -216,7 +217,11 @@ def main():
     nmap_options = [i.replace("_", "-") for i in args.nmap_options]
     for target in targets.split(","):
         if not args.nmap_output:
-            nmap_output = f"speedmap-{target}-{time.gmtime()[3]}:{time.gmtime()[4]}:{time.gmtime()[5]}.txt"
+            nmap_output = [
+                f"speedmap_{target}_{time.gmtime()[0]}-{time.gmtime()[1]}-{time.gmtime()[2]}_", 1, ".txt"]
+            while path.exists("".join([str(i) for i in nmap_output])):
+                nmap_output[1] += 1
+            nmap_output = "".join([str(i) for i in nmap_output])
         else:
             nmap_output = args.nmap_output
         debug(f"{nmap_output=}", debug_option)

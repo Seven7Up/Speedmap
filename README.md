@@ -6,7 +6,8 @@
 
 ## About:
 
-![ScreenRecord](ScreenShots/ScreenRecord-2021-8-31.gif)
+![ScreenShot 1](ScreenShots/ScreenShoot-2021-09-01.png)
+![ScreenShot 2](ScreenShots/ScreenShoot-2021-09-01_1.png)
 Speedmap is a [`python`](https://python.org/) script which scans a target ports and use the powerfull [`nmap`](https://nmap.org/) for a huge and win time for a full ports scan aimed to be fast and ... speed?! I AM SPEED! ;)
 
 ## Setup:
