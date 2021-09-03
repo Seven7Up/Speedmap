@@ -5,7 +5,9 @@ from os import path
 import random
 import socket
 import subprocess
+import threading
 import time
+import sys
 
 from colorama import Fore
 from pwn import log
@@ -78,32 +80,27 @@ def debug(message: str, debug_option):
         log.info("%sDEBUG:%s %s" % (Fore.MAGENTA, Fore.RESET, message))
 
 
-def basic_scan(target, ports, timeout):
+def basic_scan(target_index, target, ports, timeout):
     working_ports = []
 
-    first_time = time.time()
     ports_progress = log.progress("Trying ports")
     try:
         for port in range(ports[0], ports[1]+1):
-            ports_progress.status(f"{port} ~= {int((port*100)/ports[1])}%")
+            port_percentage = (((port-ports[0])*100)//(ports[1]-ports[0]))
+            ports_progress.status(f"{port}/{ports[1]} ~= {port_percentage}%")
             result = request(target, port, timeout)
             if result == 0:
                 log.info("Port %s is open" % (port))
                 working_ports.append(port)
 
-    except KeyboardInterrupt:
-        log.failure("Exitting Program !!!!")
-        exit(0)
     except socket.gaierror:
         log.failure("Hostname Could Not Be Resolved !!!!")
-        exit(1)
+        sys.exit(1)
     except socket.error:
         log.failure("Server not responding !!!!")
-        exit(1)
+        sys.exit(1)
 
-    secound_time = time.time()
-    ports_progress.success(
-        f"The Time taken to Scan all ports is {int((secound_time-first_time)*1000)} ms")
+    ports_progress.success("Done!")
     return working_ports
 
 
@@ -140,9 +137,53 @@ class CapitalisedHelpFormatter(argparse.HelpFormatter):
 
 class MyParser(argparse.ArgumentParser):
     def error(self, message):
-        print('error: %s' % message)
+        print('Error: %s' % message)
         self.print_help()
-        exit(1)
+        sys.exit(1)
+
+# https://stackoverflow.com/questions/6893968/how-to-get-the-return-value-from-a-thread-in-python
+
+
+class ThreadWithReturnValue(threading.Thread):
+    def __init__(self, group=None, target=None, name=None,
+                 args=(), kwargs={}, Verbose=None):
+        threading.Thread.__init__(self, group, target, name, args, kwargs)
+        self._return = None
+
+    def run(self):
+        if self._target is not None:
+            self._return = self._target(*self._args,
+                                        **self._kwargs)
+
+    # def globaltrace(self, frame, event, arg):
+    #     if event == 'call':
+    #         return self.localtrace
+    #     else:
+    #         return None
+
+    # def localtrace(self, frame, event, arg):
+    #     if self.killed:
+    #         if event == 'line':
+    #             raise SystemExit()
+    #     return self.localtrace
+
+    # def kill(self):
+    #     self.killed = True
+
+    def join(self, *args):
+        threading.Thread.join(self, *args)
+        return self._return
+
+
+def sub_main(thread_index, results, target, ports, timeout, debug_option):
+    debug(
+        f"Thread thread_{thread_index}: ports={ports[0]}-{ports[1]}", debug_option)
+    working_ports = basic_scan(thread_index, target, ports, timeout)
+    if len(working_ports) == 0:
+        results[thread_index] = working_ports
+        return
+    debug_working_ports = "".join([f"{i}," for i in working_ports])[:-1]
+    results[thread_index] = working_ports
 
 
 def main():
@@ -160,7 +201,7 @@ def main():
     parser.add_argument('-v',
                         '--version',
                         action='version',
-                        version='%(prog)s 1.0',
+                        version='%(prog)s 2.0',
                         help="Show program's version and exit."
                         )
     parser.add_argument("targets",
@@ -191,7 +232,7 @@ def main():
     parser.add_argument("-n",
                         "--nmap",
                         type=str,
-                        default="_A _sC _vv",
+                        default=["_A", "_sC", "_vv"],
                         nargs='+',
                         dest="nmap_options",
                         help="Set Nmap flags. Use '_' on place of '-'. Must be the last argument. Default is '_A _sC _vv'"
@@ -203,19 +244,34 @@ def main():
                         dest="nmap_output",
                         help="Name the Nmap output file."
                         )
+    parser.add_argument("-T",
+                        "--threads",
+                        type=int,
+                        default=10,
+                        dest="max_threads",
+                        help="Set the maximum threads to create"
+                        )
     args = parser.parse_args()
     debug_option = args.debug_option
     targets = args.targets
     ports = [int(i) for i in args.ports.split("-")]
+    if len(ports) != 2:
+        log.failure("Ports should be 2 items (Ex: 21-1000)")
+        sys.exit(1)
+    max_threads = args.max_threads
     debug(f"{debug_option=}", debug_option)
     debug(f"{targets=}", debug_option)
     debug(f"{ports=}", debug_option)
+    debug(f"{max_threads=}", debug_option)
     if ports[0] < 1 or ports[1] > 65535:
         log.failure("Invalid ports range!")
-        exit(1)
+        sys.exit(1)
     timeout = args.timeout
     nmap_options = [i.replace("_", "-") for i in args.nmap_options]
+    threads = []
     for target in targets.split(","):
+        if target == "":
+            continue
         if not args.nmap_output:
             nmap_output = [
                 f"speedmap_{target}_{time.gmtime()[0]}-{time.gmtime()[1]}-{time.gmtime()[2]}_", 1, ".txt"]
@@ -225,14 +281,38 @@ def main():
         else:
             nmap_output = args.nmap_output
         debug(f"{nmap_output=}", debug_option)
+        threads_ports = [(ports[1]-ports[0])//max_threads]*(max_threads-1)
+        threads_ports += [((ports[1]-ports[0])//max_threads) +
+                          ((ports[1]-ports[0]) % max_threads)]
+        threads = [None] * max_threads
+        results = [None] * max_threads
+        port_index = ports[0]
         status_banner(target, initial=True)
-        if target == "":
-            continue
-        working_ports = basic_scan(target, ports, timeout)
-        if len(working_ports) == 0:
+        first_time = time.time()
+        for thread_index in range(len(threads)):
+            threads[thread_index] = ThreadWithReturnValue(target=sub_main, args=(thread_index, results, target, [
+                                                          port_index, port_index+threads_ports[thread_index]], timeout, debug_option))
+            threads[thread_index].daemon = True
+            threads[thread_index].start()
+            port_index += threads_ports[thread_index]
+        try:
+            # while threading.active_count() > 1:
+            #     time.sleep(0.1)
+            for thread_index in range(len(threads)):
+                threads[thread_index].join()
+        except KeyboardInterrupt:
+            # for thread_index in range(len(threads)):
+            #     threads[thread_index].kill()
+            log.failure("Exitting Program !!!!")
+            sys.exit(0)
+        if len([c for i in results for c in i]) == 0:
             log.failure("There is no open port in this machine!")
             continue
-        working_ports = "".join([f"{i}," for i in working_ports])[:-1]
+        secound_time = time.time()
+        log.info(
+            f"The Time taken to Scan all ports is {int((secound_time-first_time)*1000)} ms")
+        working_ports = "".join([f"{c}," for i in results for c in i])[:-1]
+        log.info(f"working_ports = {working_ports}")
         nmap(target, working_ports, nmap_options, nmap_output, debug_option)
         status_banner(target, final=True)
 
