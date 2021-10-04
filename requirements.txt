@@ -1,2 +1,1 @@
-colorama>=0.4.4
 pwntools>=4.6.0

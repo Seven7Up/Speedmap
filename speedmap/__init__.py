@@ -9,7 +9,7 @@ import threading
 import time
 import sys
 
-from colorama import Fore
+from speedmap.colors import Fore
 from pwn import log
 # import xmltodict
 # import json
