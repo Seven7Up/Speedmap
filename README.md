@@ -12,22 +12,16 @@ Speedmap is a [`python`](https://python.org/) script which scans a target ports 
 
 ## Setup:
 
-Install required packages with pip as:
-
-```
-pip install -r requirements.txt
-```
-
-or:
-
-```
-pip install colorama pwntools
-```
-
-Then get the repo as [tarball](https://github.com/Seven-7Up/speedmap/archive/master.tar.gz) or [zip](https://github.com/Seven-7Up/speedmap/archive/master.zip) or with [`git`](https://git-scm.com/):
+Get the repo as [tarball](https://github.com/Seven-7Up/speedmap/archive/master.tar.gz) or [zip](https://github.com/Seven-7Up/speedmap/archive/master.zip) or with [`git`](https://git-scm.com/):
 
 ```
 git clone https://github.com/Seven-7Up/speedmap.git
+```
+
+Then run setup.py file to Install `speedmap` command:
+
+```
+python3 setup.py install
 ```
 
 ## Usage:
