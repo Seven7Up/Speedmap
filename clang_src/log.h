@@ -1,4 +1,5 @@
 #include <stdio.h>
+#include <stdlib.h>
 #include <string.h>
 #include <malloc.h>
 
@@ -88,56 +89,76 @@ char* replace_word(const char* s, const char* oldW,
     return result;
 }
 
-int info(char *string) {
+int info(char *string, ...) {
     char *code_str = get_color_str(colors_codes.BLUE);
     char *reset_str = get_color_str(colors_codes.RESET);
     char *formatted_str = replace_word(string, "\n", "\n    ");
 
-    printf("[%s*%s] %s\n", code_str, reset_str, formatted_str);
+    va_list comp;
+    va_start(comp, string);
+    printf("[%s*%s] %s\n", code_str, reset_str, formatted_str, comp);
+    va_end(comp);
+
     free(code_str);
     free(reset_str);
     return 0;
 };
 
-int succ(char *string) {
+int succ(char *string, ...) {
     char *code_str = get_color_str(colors_codes.GREEN);
     char *reset_str = get_color_str(colors_codes.RESET);
     char *formatted_str = replace_word(string, "\n", "\n    ");
 
-    printf("[%s+%s] %s\n", code_str, reset_str, formatted_str);
+    va_list comp;
+    va_start(comp, string);
+    printf("[%s+%s] %s\n", code_str, reset_str, formatted_str, comp);
+    va_end(comp);
+    
     free(code_str);
     free(reset_str);
     return 0;
 };
 
-int err(char *string) {
+int err(char *string, ...) {
     char *code_str = get_color_str(colors_codes.RED);
     char *reset_str = get_color_str(colors_codes.RESET);
     char *formatted_str = replace_word(string, "\n", "\n    ");
-
-    printf("[%s-%s] %s\n", code_str, reset_str, formatted_str);
+    
+    va_list comp;
+    va_start(comp, string);
+    printf("[%s-%s] %s\n", code_str, reset_str, formatted_str, comp);
+    va_end(comp);
+    
     free(code_str);
     free(reset_str);
     return 0;
 };
 
-int debug(char *string) {
+int debug(char *string, ...) {
     char *code_str = get_color_str(colors_codes.MAGENTA);
     char *reset_str = get_color_str(colors_codes.RESET);
     char *formatted_str = replace_word(string, "\n", "\n         ");
-
-    printf("[%sDEBUG%s]: %s\n", code_str, reset_str, formatted_str);
+    
+    va_list comp;
+    va_start(comp, string);
+    printf("[%sDEBUG%s]: %s\n", code_str, reset_str, formatted_str, comp);
+    va_end(comp);
+    
     free(code_str);
     free(reset_str);
     return 0;
 };
 
-int warn(char *string) {
+int warn(char *string, ...) {
     char *code_str = get_color_str(colors_codes.YELLOW);
     char *reset_str = get_color_str(colors_codes.RESET);
     char *formatted_str = replace_word(string, "\n", "\n          ");
-
-    printf("[%sWARNING%s]: %s\n", code_str, reset_str, formatted_str);
+    
+    va_list comp;
+    va_start(comp, string);
+    printf("[%sWARNING%s]: %s\n", code_str, reset_str, formatted_str, comp);
+    va_end(comp);
+    
     free(code_str);
     free(reset_str);
     return 0;
