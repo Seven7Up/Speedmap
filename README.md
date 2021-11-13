@@ -6,7 +6,7 @@
 
 ## TODO:
 
-- [ ] Build our own logger class (that support progress line print).
+- [ ] Build our own logger class (that support progress line printing).
 - [ ] Create a C binary source (C is a super fast lang).
 
 ## About:
