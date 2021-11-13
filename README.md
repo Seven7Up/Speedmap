@@ -4,6 +4,11 @@
 ![GitHub branch checks state](https://img.shields.io/github/checks-status/Seven-7Up/speedmap/master?color=green&logo=master)
 ![Build](https://img.shields.io/badge/build-passing-brightgreen)
 
+## TODO:
+
+- [ ] Build our own logger class (that support progress line print).
+- [ ] Create a C binary source (C is a super fast lang).
+
 ## About:
 
 ![ScreenShot 1](./ScreenShots/ScreenShoot-2021-09-01.png)
