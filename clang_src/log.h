@@ -1,4 +1,5 @@
 #include <stdio.h>
+#include <string.h>
 #include <malloc.h>
 
 typedef struct {
@@ -48,10 +49,51 @@ char *get_color_str(const int code) {
     return string;
 };
 
+// Source: https://www.geeksforgeeks.org/c-program-replace-word-text-another-given-word/
+char* replace_word(const char* s, const char* oldW,
+                  const char* newW)
+{
+    char* result;
+    int i, cnt = 0;
+    int newWlen = strlen(newW);
+    int oldWlen = strlen(oldW);
+  
+    // Counting the number of times old word
+    // occur in the string
+    for (i = 0; s[i] != '\0'; i++) {
+        if (strstr(&s[i], oldW) == &s[i]) {
+            cnt++;
+  
+            // Jumping to index after the old word.
+            i += oldWlen - 1;
+        }
+    }
+  
+    // Making new string of enough length
+    result = (char*)malloc(i + cnt * (newWlen - oldWlen) + 1);
+  
+    i = 0;
+    while (*s) {
+        // compare the substring with the result
+        if (strstr(s, oldW) == s) {
+            strcpy(&result[i], newW);
+            i += newWlen;
+            s += oldWlen;
+        }
+        else
+            result[i++] = *s++;
+    }
+  
+    result[i] = '\0';
+    return result;
+}
+
 int info(char *string) {
     char *code_str = get_color_str(colors_codes.BLUE);
     char *reset_str = get_color_str(colors_codes.RESET);
-    printf("[%s*%s] %s\n", code_str, reset_str, string);
+    char *formatted_str = replace_word(string, "\n", "\n    ");
+
+    printf("[%s*%s] %s\n", code_str, reset_str, formatted_str);
     free(code_str);
     free(reset_str);
     return 0;
@@ -60,7 +102,9 @@ int info(char *string) {
 int succ(char *string) {
     char *code_str = get_color_str(colors_codes.GREEN);
     char *reset_str = get_color_str(colors_codes.RESET);
-    printf("[%s*%s] %s\n", code_str, reset_str, string);
+    char *formatted_str = replace_word(string, "\n", "\n    ");
+
+    printf("[%s+%s] %s\n", code_str, reset_str, formatted_str);
     free(code_str);
     free(reset_str);
     return 0;
@@ -69,7 +113,9 @@ int succ(char *string) {
 int err(char *string) {
     char *code_str = get_color_str(colors_codes.RED);
     char *reset_str = get_color_str(colors_codes.RESET);
-    printf("[%s*%s] %s\n", code_str, reset_str, string);
+    char *formatted_str = replace_word(string, "\n", "\n    ");
+
+    printf("[%s-%s] %s\n", code_str, reset_str, formatted_str);
     free(code_str);
     free(reset_str);
     return 0;
@@ -78,7 +124,9 @@ int err(char *string) {
 int debug(char *string) {
     char *code_str = get_color_str(colors_codes.MAGENTA);
     char *reset_str = get_color_str(colors_codes.RESET);
-    printf("%sDEBUG%s: %s\n", code_str, reset_str, string);
+    char *formatted_str = replace_word(string, "\n", "\n         ");
+
+    printf("[%sDEBUG%s]: %s\n", code_str, reset_str, formatted_str);
     free(code_str);
     free(reset_str);
     return 0;
@@ -87,7 +135,9 @@ int debug(char *string) {
 int warn(char *string) {
     char *code_str = get_color_str(colors_codes.YELLOW);
     char *reset_str = get_color_str(colors_codes.RESET);
-    printf("%sWARNING%s: %s\n", code_str, reset_str, string);
+    char *formatted_str = replace_word(string, "\n", "\n          ");
+
+    printf("[%sWARNING%s]: %s\n", code_str, reset_str, formatted_str);
     free(code_str);
     free(reset_str);
     return 0;
