@@ -1,6 +1,7 @@
 #ifndef LOG_H
 #define LOG_H
 
+// Source: python colorama library, how ever I mad big changes on it.
 typedef struct {
 const int
     BLACK,
@@ -37,8 +38,9 @@ int err(char *string, ...);
 
 void err_exit(char *msg, ...);
 
-int debug(char *string, ...);
-
 int warn(char *string, ...);
+
+extern int allow_debug;
+int debug(char *string, ...);
 
 #endif // LOG_H

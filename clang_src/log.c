@@ -131,23 +131,6 @@ void err_exit(char *msg, ...) {
     exit(1);
 };
 
-int debug(char *string, ...) {
-    char *code_str = get_color_str(colors_codes.MAGENTA);
-    char *reset_str = get_color_str(colors_codes.RESET);
-    char *formatted_str = replace_word(string, "\n", "\n        ");
-    
-    va_list va_args;
-    va_start(va_args, string);
-    printf("[%sDEBUG%s] ", code_str, reset_str);
-    vprintf(formatted_str, va_args);
-    printf("\n");
-    va_end(va_args);
-    
-    free(code_str);
-    free(reset_str);
-    return 0;
-};
-
 int warn(char *string, ...) {
     char *code_str = get_color_str(colors_codes.YELLOW);
     char *reset_str = get_color_str(colors_codes.RESET);
@@ -163,4 +146,25 @@ int warn(char *string, ...) {
     free(code_str);
     free(reset_str);
     return 0;
+};
+
+int allow_debug = 0; // false
+int debug(char *string, ...) {
+    if (allow_debug) { // to enable it, you need to change allow_debug to 1 wich is true
+        char *code_str = get_color_str(colors_codes.MAGENTA);
+        char *reset_str = get_color_str(colors_codes.RESET);
+        char *formatted_str = replace_word(string, "\n", "\n        ");
+
+        va_list va_args;
+        va_start(va_args, string);
+        printf("[%sDEBUG%s] ", code_str, reset_str);
+        vprintf(formatted_str, va_args);
+        printf("\n");
+        va_end(va_args);
+
+        free(code_str);
+        free(reset_str);
+        return 0;
+    }
+    return 1;
 };

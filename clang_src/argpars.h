@@ -9,12 +9,14 @@ typedef struct {
     const char *long_option;
     const char *description;
     const char *value_to_save; // bool, int, string, help
-    void **value;
+    char *value;
 } argpars;
+
+char *get_arg_value(argpars *args, int args_size, char *name);
 
 void err_exit(char *msg, ...);
 
-#define PARSER_SIZE(parser) (sizeof(parser)/sizeof(*parser))
+#define ARRAY_SIZE(parser) (sizeof(parser)/sizeof(*parser))
 #define CMP_2_STR(_string_1, _string_2) (strcmp(_string_1, _string_2) == 0)
 
 #define true 1
