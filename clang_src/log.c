@@ -1,5 +1,10 @@
-#include "log.h"
 #include <stdio.h>
+#include <stdlib.h>
+#include <malloc.h>
+#include <stdarg.h>
+#include <string.h>
+
+#include "log.h"
 
 const colors colors_codes = {
     .BLACK = 30,
@@ -114,6 +119,16 @@ int err(char *string, ...) {
     free(code_str);
     free(reset_str);
     return 0;
+};
+
+void err_exit(char *msg, ...) {
+    va_list va_args;
+    va_start(va_args, msg);
+    printf("[%s-%s] ", get_color_str(colors_codes.RED), get_color_str(colors_codes.RESET));
+    vprintf(msg, va_args);
+    printf("\n");
+    va_end(va_args);
+    exit(1);
 };
 
 int debug(char *string, ...) {

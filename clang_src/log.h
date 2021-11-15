@@ -1,8 +1,3 @@
-#include <stdio.h>
-#include <stdarg.h>
-#include <string.h>
-#include <malloc.h>
-
 #ifndef LOG_H
 #define LOG_H
 
@@ -27,6 +22,7 @@ const int
     LIGHTWHITE_EX;
 } colors;
 
+extern const colors colors_codes;
 
 char *get_color_str(const int code);
 
@@ -38,6 +34,8 @@ int info(char *string, ...);
 int succ(char *string, ...);
 
 int err(char *string, ...);
+
+void err_exit(char *msg, ...);
 
 int debug(char *string, ...);
 

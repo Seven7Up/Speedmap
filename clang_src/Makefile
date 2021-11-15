@@ -1,13 +1,19 @@
 CC := gcc
 CFLAGS := -g -Wall
-BASE_NAME := speedmap
 
-all: clean $(BASE_NAME).c
-	$(CC) $(CFLAGS) -o $(BASE_NAME).o $(BASE_NAME).c
+SRC_FILE := speedmap.c
+BIN_FILE := speedmap.dev
+
+SHARED_SRC := $(shell ls | grep '[a-zA-Z]*\.c' | grep -v $(SRC_FILE) | xargs)
+
+all: clean build
+
+build:
+	$(CC) $(CFLAGS) -o $(BIN_FILE) $(SRC_FILE) $(SHARED_SRC)
 	
-	@echo "------------------------------------------------------------"
-	./$(BASE_NAME).o
-	@echo "------------------------------------------------------------"
+# @echo "----------------------------------------------------------------------------"
+# @./$(BIN_FILE)
+# @echo "----------------------------------------------------------------------------"
 
-
-clean: $(BASE_NAME).o
+clean:
+	rm -f $(BIN_FILE)
