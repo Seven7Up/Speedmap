@@ -159,7 +159,7 @@ int debug(char *string, ...) {
         va_start(va_args, string);
         printf("[%sDEBUG%s] ", code_str, reset_str);
         vprintf(formatted_str, va_args);
-        printf("\n");
+        // printf("\n");
         va_end(va_args);
 
         free(code_str);
