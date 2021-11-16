@@ -4,7 +4,7 @@
 ![GitHub branch checks state](https://img.shields.io/github/checks-status/Seven-7Up/speedmap/master?color=green&logo=master)
 ![Build](https://img.shields.io/badge/build-passing-brightgreen)
 
-Work only in Linux and MacOs (Generally on Unix Systems).
+Works only in Linux and MacOs (Generally on Unix Systems).
 
 ## TODO:
 
