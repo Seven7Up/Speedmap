@@ -4,10 +4,16 @@
 ![GitHub branch checks state](https://img.shields.io/github/checks-status/Seven-7Up/speedmap/master?color=green&logo=master)
 ![Build](https://img.shields.io/badge/build-passing-brightgreen)
 
+Work only in Linux and MacOs (Generally on Unix Systems).
+
 ## TODO:
 
 - [ ] Build our own logger class (that support progress line printing).
 - [ ] Create a C binary source (C is a super fast lang).
+
+### Future Plans:
+
+- [ ] Add support for Windows OS.
 
 ## About:
 
