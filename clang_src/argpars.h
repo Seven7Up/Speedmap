@@ -15,6 +15,7 @@ typedef struct {
 char *get_arg_value(argpars *args, int args_size, char *name);
 
 void err_exit(char *msg, ...);
+char *isint_str(char *string);
 
 #define ARRAY_SIZE(parser) (sizeof(parser)/sizeof(*parser))
 #define CMP_2_STR(_string_1, _string_2) (strcmp(_string_1, _string_2) == 0)

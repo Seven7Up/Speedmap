@@ -26,7 +26,7 @@ void print_help(char *program_name, argpars parser[], int parser_size) {
 }
 
 char *isint_str(char *string) {
-    char ints[] = {'0', '1', '2', '3', '4', '5', '6', '7', '8', '9'};
+    char ints[] = {'0', '1', '2', '3', '4', '5', '6', '7', '8', '9', '.'};
     int _need_break = false;
 
     int i;

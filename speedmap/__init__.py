@@ -1,15 +1,16 @@
 #!/usr/bin/env python3
 
-import argparse
 from os import path
+import sys
 import random
 import socket
 import subprocess
-import threading
 import time
-import sys
+import argparse
 
-from speedmap.colors import Fore
+from stdlib import ThreadWithReturnValue, LocalParser
+from colors import Fore
+
 from pwn import log
 # import xmltodict
 # import json
@@ -127,54 +128,6 @@ def nmap(target, ports: str, options: list, nmap_output, debug_option):
     # return json.loads(json.dumps(xmltodict.parse(xml_output)))
 
 
-class CapitalisedHelpFormatter(argparse.HelpFormatter):
-    def add_usage(self, usage, actions, groups, prefix=None):
-        if prefix is None:
-            prefix = 'Usage: '
-        return super(CapitalisedHelpFormatter, self).add_usage(
-            usage, actions, groups, prefix)
-
-
-class MyParser(argparse.ArgumentParser):
-    def error(self, message):
-        print('Error: %s' % message)
-        self.print_help()
-        sys.exit(1)
-
-# https://stackoverflow.com/questions/6893968/how-to-get-the-return-value-from-a-thread-in-python
-
-
-class ThreadWithReturnValue(threading.Thread):
-    def __init__(self, group=None, target=None, name=None,
-                 args=(), kwargs={}, Verbose=None):
-        threading.Thread.__init__(self, group, target, name, args, kwargs)
-        self._return = None
-
-    def run(self):
-        if self._target is not None:
-            self._return = self._target(*self._args,
-                                        **self._kwargs)
-
-    # def globaltrace(self, frame, event, arg):
-    #     if event == 'call':
-    #         return self.localtrace
-    #     else:
-    #         return None
-
-    # def localtrace(self, frame, event, arg):
-    #     if self.killed:
-    #         if event == 'line':
-    #             raise SystemExit()
-    #     return self.localtrace
-
-    # def kill(self):
-    #     self.killed = True
-
-    def join(self, *args):
-        threading.Thread.join(self, *args)
-        return self._return
-
-
 def sub_main(thread_index, results, target, ports, timeout, debug_option):
     debug(
         f"Thread thread_{thread_index}: ports={ports[0]}-{ports[1]}", debug_option)
@@ -188,8 +141,8 @@ def sub_main(thread_index, results, target, ports, timeout, debug_option):
 
 def main():
     banner()
-    parser = MyParser(description="Speedmap is python script aiming to be fast and ... speed?! I AM SPEED!",
-                      add_help=False, formatter_class=CapitalisedHelpFormatter)
+    parser = LocalParser(
+        description="Speedmap is python script aiming to be fast and ... speed?! I AM SPEED!", add_help=False)
     parser._positionals.title = 'Positional arguments'
     parser._optionals.title = 'Optional arguments'
     parser.add_argument('-h',

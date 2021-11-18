@@ -27,7 +27,7 @@ const colors colors_codes = {
 };
 
 char *get_color_str(const int code) {
-    char *string = malloc(8);
+    char *string = (char *)malloc(8);
     snprintf(string, 8, "\x1b[%dm", code);
     return string;
 };
@@ -124,7 +124,7 @@ int err(char *string, ...) {
 void err_exit(char *msg, ...) {
     va_list va_args;
     va_start(va_args, msg);
-    printf("[%s-%s] ", get_color_str(colors_codes.RED), get_color_str(colors_codes.RESET));
+    printf("[%s-%s] ", get_color_str(colors_codes.RED), get_color_str(colors_codes.RESET)); // Program will exit, so no need to free any things
     vprintf(msg, va_args);
     printf("\n");
     va_end(va_args);
