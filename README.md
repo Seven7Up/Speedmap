@@ -4,16 +4,22 @@
 ![GitHub branch checks state](https://img.shields.io/github/checks-status/Seven-7Up/speedmap/master?color=green&logo=master)
 ![Build](https://img.shields.io/badge/build-passing-brightgreen)
 
+Works only in Linux and MacOs (Generally on Unix Systems).
+
 ## TODO:
 
 - [ ] Build our own logger class (that support progress line printing).
 - [ ] Create a C binary source (C is a super fast lang).
 
+### Future Plans:
+
+- [ ] Add support for Windows OS.
+
 ## About:
 
 ![ScreenShot 1](./ScreenShots/ScreenShoot-2021-09-01.png)
 ![ScreenShot 2](./ScreenShots/ScreenShoot-2021-09-01_1.png)
-Speedmap is a [`python`](https://python.org/) script which scans a target ports and use the powerfull [`nmap`](https://nmap.org/) for a huge and win time for a full ports scan aimed to be fast and ... speed?! I AM SPEED! ;)
+Speedmap is a [`python`](https://python.org/) script which scans a target ports and use the powerfull [`nmap`](https://nmap.org/) to win time for a full ports scan aimed to be fast and ... speed?! I AM SPEED! ;)
 
 ## Setup:
 
