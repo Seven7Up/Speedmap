@@ -1,9 +1,15 @@
+<<<<<<< HEAD
 #!/usr/bin/env python3
 # -*- coding: utf-8 -*-
 
 import argparse
 import sys
 import threading
+=======
+import sys
+import threading
+import argparse
+>>>>>>> 9d1a7562e03bbb916a98e3ddc35ff5c578c80545
 
 
 class CapitalisedHelpFormatter(argparse.HelpFormatter):
@@ -14,7 +20,33 @@ class CapitalisedHelpFormatter(argparse.HelpFormatter):
             usage, actions, groups, prefix)
 
 
+<<<<<<< HEAD
 class MyParser(argparse.ArgumentParser):
+=======
+class LocalParser(argparse.ArgumentParser):
+    def __init__(
+        self,
+        prog,
+        usage,
+        description,
+        epilog,
+        parents,
+        formatter_class=CapitalisedHelpFormatter,
+        *args,
+        **kwargs
+    ):
+        super().__init__(
+            prog,
+            usage,
+            description,
+            epilog,
+            parents,
+            formatter_class,
+            args,
+            kwargs
+        )
+
+>>>>>>> 9d1a7562e03bbb916a98e3ddc35ff5c578c80545
     def error(self, message):
         print('Error: %s' % message)
         self.print_help()
