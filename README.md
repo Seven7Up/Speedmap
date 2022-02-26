@@ -12,6 +12,13 @@ Speedmap is a [`python`](https://python.org/) script which scans a target ports 
 
 ## Setup:
 
+I realy recommand `python-venv` before install any package to avoid packages conflit:
+
+```bash
+python3 -m venv venv
+. ./venv/bin/activate
+```
+
 The most basic command to run is:
 
 ```

@@ -36,6 +36,6 @@ setup(
     author="Seven7Up",
     author_email="seven7up@tutanota.com",
     download_url="https://github.com/Seven7Up/Speedmap",
-    install_requires=['pwntools>=4.6.0'],
+    install_requires=['pwntools>=4.6.0', "colorama>=0.4.4"],
     keywords='speedmap nmap python portscanner',
 )
