@@ -6,8 +6,8 @@
 #ifndef _ANSI_ESCAPES_H
 #define _ANSI_ESCAPES_H
 
-void setup_console_ans(void);
-void restore_console_ans(void);
+void setup_console_ansi(void);
+void restore_console_ansi(void);
 
 enum colors {
   reset_color,
@@ -33,6 +33,6 @@ enum colors {
   reset_back = 49
 };
 
-char *code2str_ans(const int color_code);
+char *ansicode2str(const int color_code);
 
 #endif

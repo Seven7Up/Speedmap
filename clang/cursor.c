@@ -6,15 +6,20 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
+#include <sys/ioctl.h>
 #include <termios.h>
 
 #include "cursor.h"
-#include "list.h"
 
 struct termios *settings;
 int stdout_fileno;
+struct position win;
 
-int setup_cur() {
+struct position *init_position() {
+  return malloc(sizeof(struct position));
+}
+
+int setup() {
   struct termios mode;
 
   if (tcgetattr(stdout_fileno, &mode)) {
@@ -31,7 +36,7 @@ int setup_cur() {
   return 0;
 }
 
-int reset_cur() {
+int reset() {
   if (tcsetattr(stdout_fileno, TCSADRAIN, settings)) {
     fprintf(stderr, "Error: tcsetattr()\n");
     return 1;
@@ -39,7 +44,7 @@ int reset_cur() {
   return 0;
 }
 
-int get_pos_report_cur(char *s) {
+int get_pos_report(char *s) {
 
   settings = (struct termios *)malloc(sizeof(struct termios));
   stdout_fileno = fileno(stdout);
@@ -52,7 +57,7 @@ int get_pos_report_cur(char *s) {
   char c;
   int i;
 
-  setup_cur();
+  setup();
 
   fprintf(stdout, "\x1b[6n");
   fflush(stdout);
@@ -67,11 +72,11 @@ int get_pos_report_cur(char *s) {
     i++;
   }
 
-  reset_cur();
+  reset();
   return 0;
 }
 
-int reg_findall_cur(const char *regexp, const char *s, const node_t *parent) {
+int regfindall_pos(const char *regexp, const char *s, struct position *pos) {
   char *p = (char *)s;
   regex_t regex;
   int status;
@@ -113,8 +118,10 @@ int reg_findall_cur(const char *regexp, const char *s, const node_t *parent) {
       /* printf("str[%i:%i] = '%s';\n", matches[i].rm_so, matches[i].rm_eo,
        * match); */
 
-      if (i != 0)
-        add_child_lst(parent, strdup(match));
+      if (i == 1)
+        pos->row = atoi(match);
+      else if (i == 2)
+        pos->col = atoi(match);
     }
     p += matches[0].rm_eo;
   }
@@ -123,38 +130,27 @@ int reg_findall_cur(const char *regexp, const char *s, const node_t *parent) {
   return 0;
 }
 
-int list2pos_cur(const node_t *parent, struct position *pos) {
-  int length;
-  node_t *ptr;
-
-  length = get_length_lst(parent);
-  for (int i = 0; i < length; i++) {
-    ptr = get_child_lst(parent, i);
-
-    if (ptr->value == NULL)
-      continue;
-    if (!i)
-      pos->row = atoi(ptr->value);
-    else if (i == 1)
-      pos->col = atoi(ptr->value);
-    else
-      return 1;
-  }
-
-  return 0;
-}
-
-struct position *get_current_pos_cur() {
+struct position *get_current_pos() {
   char *s = (char *)malloc(32);
   char regexp[64] = "\x1b\\[([[:digit:]]+);([[:digit:]]+)R";
-  const node_t *parent = init_parent_lst();
-  struct position *pos = malloc(sizeof(struct position));
+  struct position *pos = init_position();
 
-  get_pos_report_cur(s);
-  reg_findall_cur(regexp, s, parent);
-  list2pos_cur(parent, pos);
+  get_pos_report(s);
+  regfindall_pos(regexp, s, pos);
 
   free(s);
-  free_all_lst((node_t **)&parent);
   return pos;
 }
+
+struct position *get_terminal_size() {
+  struct position *pos = init_position();
+  struct winsize w;
+
+  ioctl(stdout_fileno, TIOCGWINSZ, &w);
+  pos->row = w.ws_row;
+  pos->col = w.ws_col;
+
+  return pos;
+}
+
+void sync_size() { win = *get_terminal_size(); }

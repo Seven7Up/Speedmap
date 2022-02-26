@@ -1,7 +1,7 @@
 CC := gcc
 CFLAGS := -g -Wall
 
-SRC_FILE := main.c ansi_escapes.c log.c list.c cursor.c
+SRC_FILE := main.c ansi_escapes.c log.c cursor.c
 BIN_FILE := main.o
 
 SHARED_LIBS := -lpthread
@@ -19,5 +19,5 @@ run:
 clean:
 	rm -f $(BIN_FILE)
 
-gdb:all
+gdb: all
 	gdb -q ./$(BIN_FILE)

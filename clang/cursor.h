@@ -6,8 +6,6 @@
 #ifndef _CURSOR_H
 #define _CURSOR_H
 
-#include "list.h"
-
 struct position {
   int row;
   int col;
@@ -15,17 +13,18 @@ struct position {
 
 extern struct termios *settings;
 extern int stdout_fileno;
+extern struct position win;
 
-int setup_console_cur();
+struct position *init_position();
 
-int reset_console_cur();
+int get_pos_report(char *s);
 
-int get_pos_report_cur(char *s);
+int regfindall_pos(const char *regexp, const char *s, struct position *pos);
 
-int reg_findall_cur(const char *regexp, const char *s, const node_t *parent);
+struct position *get_current_pos();
 
-int list2pos_cur(const node_t *parent, struct position *pos);
+struct position *get_terminal_size();
 
-struct position *get_current_pos_cur();
+void sync_size();
 
 #endif

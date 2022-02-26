@@ -15,7 +15,7 @@
 static HANDLE stdout_handle;
 static DWORD out_mode_init;
 
-void setup_console_ans(void) {
+void setup_console_ansi(void) {
   DWORD out_mode = 0;
   stdout_handle = GetStdHandle(STD_OUTPUT_HANDLE);
 
@@ -36,8 +36,7 @@ void setup_console_ans(void) {
   }
 }
 
-void restore_console_ans(void) {
-  /* printf("\x1b[0m"); */
+void restore_console_ansi(void) {
   char *restore_color = code2str_ans(reset_color);
   if (!restore_color)
     exit(GetLastError());
@@ -49,11 +48,10 @@ void restore_console_ans(void) {
   }
 }
 #else
-void setup_console_ans(void) {}
+void setup_console_ansi(void) {}
 
-void restore_console_ans(void) {
-  /* printf("\x1b[0m"); */
-  char *restore_color = code2str_ans(reset_color);
+void restore_console_ansi(void) {
+  char *restore_color = ansicode2str(reset_color);
   if (!restore_color)
     return;
   printf("%s", restore_color);
@@ -61,8 +59,8 @@ void restore_console_ans(void) {
 }
 #endif
 
-char *code2str_ans(const int color_code) {
+char *ansicode2str(const int color_code) {
   char *color_code_string = (char *)malloc(7);
   sprintf(color_code_string, "\x1b[%dm", color_code);
   return color_code_string;
-};
+}

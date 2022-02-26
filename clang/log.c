@@ -2,12 +2,14 @@
  * LOG.c is where functions are declared and there definitions.
  */
 
+#include <pthread.h>
 #include <stdarg.h>
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
 
 #include "ansi_escapes.h"
+#include "cursor.h"
 #include "log.h"
 
 const _log_level noset_level = {"noset", 0, "", 0, reset_fore};
@@ -15,8 +17,26 @@ const _log_level critical_level = {"critical", 1, "CRITICAL", 11, red_back};
 const _log_level warning_level = {"warning", 2, "WARNING", 10, yellow_fore};
 const _log_level success_level = {"success", 3, "+", 4, green_fore};
 const _log_level error_level = {"error", 3, "-", 4, red_fore};
-const _log_level info_level = {"info", 4, "*", 4, blue_fore};
+const _log_level info_level = {"info", 3, "*", 4, blue_fore};
+const _log_level progress_level = {"progress", 4, NULL, 4, (enum colors)0};
 const _log_level debug_level = {"debug", 5, "DEBUG", 8, magenta_fore};
+
+const char **spinners[] = {
+    {"/.......", "./......", "../.....", ".../....", "..../...", "...../..",
+     "....../.", ".......\\", "......\\.", ".....\\..", "....\\...",
+     "...\\....", "..\\.....", ".\\......"},
+    {"|", "/", "-", "\\"},
+    {"q", "p", "b", "d"},
+    {".", "o", "O", "0", "*", " ", " ", " "},
+    {"▁", "▃", "▄", "▅", "▆", "▇", "█", "▇", "▆", "▅", "▄", "▃"},
+    {"┤", "┘", "┴", "└", "├", "┌", "┬", "┐"},
+    {"←", "↖", "↑", "↗", "→", "↘", "↓", "↙"},
+    {"◢", "◢", "◣", "◣", "◤", "◤", "◥", "◥"},
+    {"◐", "◓", "◑", "◒"},
+    {"▖", "▘", "▝", "▗"},
+    {".", "o", "O", "°", " ", " ", "°", "O", "o", ".", " ", " "},
+    {"<", "<", "∧", "∧", ">", ">", "v", "v"},
+};
 
 _log_level *global_log_level = (_log_level *)&info_level;
 
@@ -72,10 +92,12 @@ const char *str_replace(char *orig, char *rep, char *with) {
   return result;
 }
 
-int _log(const _log_level *level, const char *str, va_list args) {
-  if (level->code > global_log_level->code) {
+int goto_pos(int n, int m) { return fprintf(stdout, "\x1b[%d;%dH", n, m); }
+
+int _log(const _log_level level, const char *str, va_list args,
+         struct progress *prog) {
+  if (level.code > global_log_level->code)
     return 1;
-  }
 
   char prefix[64];
   char *color;
@@ -87,12 +109,16 @@ int _log(const _log_level *level, const char *str, va_list args) {
   int ret;
 
   strcat(join_str_arg, "\n");
-  for (int i = 0; i <= level->indent; i++)
+  for (int i = 0; i <= level.indent; i++)
     strcat(join_str_arg, " ");
 
-  color = code2str_ans(level->color);
-  rtn_color = code2str_ans(reset_color);
-  sprintf(prefix, "[%s%s%s] ", color, level->prefix, rtn_color);
+  if (!strcmp(level.name, progress_level.name)) {
+
+  } else {
+    color = ansicode2str(level.color);
+    rtn_color = ansicode2str(reset_color);
+    sprintf(prefix, "[%s%s%s] ", color, level.prefix, rtn_color);
+  }
 
   joined_str = str_replace(tmp, "\n", join_str_arg);
   if (!joined_str)
@@ -118,7 +144,7 @@ int noset(const char *str, ...) {
   va_list args;
 
   va_start(args, str);
-  ret = _log(&noset_level, str, args);
+  ret = _log(noset_level, str, args, NULL);
   va_end(args);
 
   return ret;
@@ -129,7 +155,7 @@ int critical(const char *str, ...) {
   va_list args;
 
   va_start(args, str);
-  ret = _log(&critical_level, str, args);
+  ret = _log(critical_level, str, args, NULL);
   va_end(args);
 
   return ret;
@@ -140,7 +166,7 @@ int warning(const char *str, ...) {
   va_list args;
 
   va_start(args, str);
-  ret = _log(&warning_level, str, args);
+  ret = _log(warning_level, str, args, NULL);
   va_end(args);
 
   return ret;
@@ -151,7 +177,7 @@ int success(const char *str, ...) {
   va_list args;
 
   va_start(args, str);
-  ret = _log(&success_level, str, args);
+  ret = _log(success_level, str, args, NULL);
   va_end(args);
 
   return ret;
@@ -162,7 +188,7 @@ int error(const char *str, ...) {
   va_list args;
 
   va_start(args, str);
-  ret = _log(&error_level, str, args);
+  ret = _log(error_level, str, args, NULL);
   va_end(args);
 
   return ret;
@@ -173,7 +199,7 @@ int info(const char *str, ...) {
   va_list args;
 
   va_start(args, str);
-  ret = _log(&info_level, str, args);
+  ret = _log(info_level, str, args, NULL);
   va_end(args);
 
   return ret;
@@ -184,7 +210,18 @@ int debug(const char *str, ...) {
   va_list args;
 
   va_start(args, str);
-  ret = _log(&debug_level, str, args);
+  ret = _log(debug_level, str, args, NULL);
+  va_end(args);
+
+  return ret;
+}
+
+int status(struct position *pos, const char *msg, ...) {
+  int ret;
+  va_list args;
+
+  va_start(args, msg);
+  ret = _log(progress_level, msg, args, NULL);
   va_end(args);
 
   return ret;

@@ -1,18 +1,23 @@
+#include <pthread.h>
+#include <signal.h>
 #include <stdio.h>
 #include <stdlib.h>
-#include <string.h>
 
 #include "cursor.h"
-#include "list.h"
 #include "log.h"
 
-int main(int argc, char *argv[]) {
-  struct position *pos = malloc(sizeof(struct position));
-  node_t *parent = malloc(sizeof(node_t));
+int main() {
+  signal(SIGWINCH, sync_size);
+  struct position *pos = get_current_pos();
 
-  pos = get_current_pos_cur();
-  info("row=%d, col=%d", pos->row, pos->col);
+  sync_size();
 
-  free(pos);
+  char *str_list[] = {"Hello", "World", "!"};
+  int index = 0;
+  while (NULL != str_list[index]) {
+    info("str_list[%d]='%s'", index, str_list[index]);
+    index++;
+  }
+
   return 0;
 }
